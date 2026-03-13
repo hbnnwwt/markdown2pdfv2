@@ -1,0 +1,111 @@
+/* Default Theme with Chinese support */
+@page {
+    size: A4;
+    margin: 2cm;
+}
+
+body {
+    font-family: ChineseFont, "Microsoft YaHei", SimHei, Helvetica, Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #333333;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: ChineseFont, "Microsoft YaHei", SimHei, Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+h1 {
+    font-size: 22pt;
+    border-bottom: 2px solid #e1e4e8;
+    padding-bottom: 6pt;
+    color: #0366d6;
+}
+
+h2 {
+    font-size: 16pt;
+    border-bottom: 1px solid #e1e4e8;
+    padding-bottom: 4pt;
+}
+
+h3 { font-size: 13pt; }
+h4 { font-size: 11pt; }
+
+p {
+    margin-top: 0;
+    margin-bottom: 10pt;
+}
+
+a {
+    color: #0366d6;
+    text-decoration: underline;
+}
+
+code, pre {
+    font-family: Consolas, "Courier New", Courier, monospace;
+    font-size: 9pt;
+}
+
+code {
+    background-color: #f6f6f6;
+    padding: 2px 4px;
+}
+
+pre {
+    background-color: #f6f6f6;
+    padding: 10pt;
+    border: 1px solid #ddd;
+    margin: 10pt 0;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+ul, ol {
+    margin-top: 0;
+    margin-bottom: 10pt;
+    padding-left: 20pt;
+}
+
+li {
+    margin-bottom: 4pt;
+}
+
+blockquote {
+    margin: 10pt 0;
+    padding-left: 10pt;
+    border-left: 3pt solid #dfe2e5;
+    color: #666666;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10pt 0;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 6pt 10pt;
+    text-align: left;
+}
+
+th {
+    background-color: #f6f6f6;
+    font-weight: bold;
+}
+
+img {
+    max-width: 100%;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #e1e4e8;
+    margin: 16pt 0;
+}

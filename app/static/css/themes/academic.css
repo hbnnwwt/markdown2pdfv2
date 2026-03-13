@@ -1,0 +1,109 @@
+/* Academic Theme with Chinese support */
+@page {
+    size: A4;
+    margin: 2.5cm;
+}
+
+body {
+    font-family: ChineseFont, "SimSun", "Times New Roman", Times, serif;
+    font-size: 12pt;
+    line-height: 1.8;
+    color: #000000;
+    text-align: justify;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: ChineseFont, "SimHei", "Microsoft YaHei", Arial, sans-serif;
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+h1 {
+    font-size: 20pt;
+    text-align: center;
+    margin-bottom: 20pt;
+}
+
+h2 { font-size: 15pt; margin-top: 18pt; }
+h3 { font-size: 13pt; margin-top: 14pt; }
+h4 { font-size: 12pt; margin-top: 12pt; }
+
+p {
+    margin-top: 0;
+    margin-bottom: 8pt;
+    text-indent: 2em;
+}
+
+a {
+    color: #000000;
+    text-decoration: underline;
+}
+
+code, pre {
+    font-family: Consolas, "Courier New", Courier, monospace;
+    font-size: 10pt;
+}
+
+code {
+    background-color: #f5f5f5;
+    padding: 1px 3px;
+}
+
+pre {
+    background-color: #f5f5f5;
+    padding: 10pt;
+    margin: 10pt 0;
+    border: 1px solid #ccc;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+ul, ol {
+    margin-top: 0;
+    margin-bottom: 8pt;
+    padding-left: 20pt;
+}
+
+li {
+    margin-bottom: 3pt;
+}
+
+blockquote {
+    margin: 10pt 0;
+    padding: 6pt 12pt;
+    border-left: 3pt solid #666;
+    background-color: #f9f9f9;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12pt auto;
+}
+
+th, td {
+    border: 1px solid #000;
+    padding: 6pt 10pt;
+    text-align: center;
+}
+
+th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+    margin: 10pt auto;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #000;
+    margin: 16pt 0;
+}

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown to PDF Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .editor-textarea {
+            width: 100%;
+            height: 100%;
+            background-color: #1f2937;
+            color: #e5e7eb;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            padding: 16px;
+            border: none;
+            outline: none;
+            resize: none;
+        }
+        .markdown-body h1 { font-size: 2em; font-weight: bold; margin: 0.67em 0; border-bottom: 1px solid #eaecef; padding-bottom: .3em; }
+        .markdown-body h2 { font-size: 1.5em; font-weight: bold; margin: 0.83em 0; border-bottom: 1px solid #eaecef; padding-bottom: .3em; }
+        .markdown-body h3 { font-size: 1.17em; font-weight: bold; margin: 1em 0; }
+        .markdown-body p { margin: 1em 0; line-height: 1.6; }
+        .markdown-body code { background: #f6f8fa; padding: 0.2em 0.4em; border-radius: 3px; font-family: monospace; }
+        .markdown-body pre { background: #f6f8fa; padding: 16px; border-radius: 6px; overflow-x: auto; }
+        .markdown-body pre code { background: none; padding: 0; }
+        .markdown-body ul, .markdown-body ol { padding-left: 2em; margin: 1em 0; }
+        .markdown-body li { margin: 0.25em 0; }
+        .markdown-body blockquote { border-left: 4px solid #dfe2e5; padding-left: 1em; margin: 1em 0; color: #6a737d; }
+        .markdown-body table { border-collapse: collapse; width: 100%; margin: 1em 0; }
+        .markdown-body th, .markdown-body td { border: 1px solid #dfe2e5; padding: 8px 12px; }
+        .markdown-body th { background: #f6f8fa; font-weight: bold; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+    <div class="h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex-shrink-0">
+            <div class="flex items-center justify-between">
+                <h1 class="text-xl font-bold text-white">
+                    <span class="text-blue-400">Markdown</span> to PDF
+                </h1>
+                <div class="flex items-center gap-4">
+                    <label class="text-sm text-gray-400">Theme:</label>
+                    <select id="theme" class="bg-gray-700 border border-gray-600 rounded px-3 py-1.5 text-sm">
+                        <option value="default">Default</option>
+                        <option value="academic">Academic</option>
+                        <option value="technical">Technical</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <!-- Toolbar -->
+        <div class="bg-gray-800 border-b border-gray-700 px-6 py-3 flex-shrink-0">
+            <div class="flex items-center gap-3">
+                <label class="cursor-pointer">
+                    <input type="file" id="fileInput" accept=".md" class="hidden">
+                    <span class="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm transition">
+                        Upload File
+                    </span>
+                </label>
+
+                <button id="previewBtn" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded text-sm transition">
+                    Preview
+                </button>
+
+                <button id="convertBtn" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-500 rounded text-sm transition">
+                    Generate PDF
+                </button>
+
+                <span id="filename" class="text-sm text-gray-400 ml-2"></span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Editor Panel -->
+            <div class="w-1/2 border-r border-gray-700 flex flex-col">
+                <div class="bg-gray-800 px-4 py-2 text-sm text-gray-400 border-b border-gray-700 flex-shrink-0">
+                    Editor
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <textarea id="editor" class="editor-textarea" spellcheck="false"># Welcome to Markdown to PDF Converter
+
+This is a tool to convert Markdown to PDF.
+
+## Features
+
+- Multiple theme styles
+- Preview
+- File upload
+- History
+
+## Code Example
+
+```
+function hello() {
+    console.log("Hello, World!");
+}
+```
+
+## Table Example
+
+| Col1 | Col2 | Col3 |
+|------|------|------|
+| A    | B    | C    |
+| D    | E    | F    |
+</textarea>
+                </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="w-1/2 flex flex-col">
+                <div class="bg-gray-800 px-4 py-2 text-sm text-gray-400 border-b border-gray-700 flex-shrink-0">
+                    Preview
+                </div>
+                <div class="flex-1 overflow-auto bg-gray-100 p-6">
+                    <div id="previewContent" class="markdown-body text-gray-900" style="display: none;"></div>
+                    <div id="previewPlaceholder" class="flex items-center justify-center h-full text-gray-400">
+                        Click "Preview" button to see rendered content
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Panel -->
+        <div class="bg-gray-800 border-t border-gray-700 px-6 py-3 flex-shrink-0">
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-gray-400">History:</span>
+                <div id="historyList" class="flex items-center gap-2 flex-wrap">
+                    <span class="text-sm text-gray-500">No records</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var editor = document.getElementById('editor');
+        var theme = document.getElementById('theme');
+        var fileInput = document.getElementById('fileInput');
+        var previewBtn = document.getElementById('previewBtn');
+        var convertBtn = document.getElementById('convertBtn');
+        var previewContent = document.getElementById('previewContent');
+        var previewPlaceholder = document.getElementById('previewPlaceholder');
+        var historyList = document.getElementById('historyList');
+        var filenameSpan = document.getElementById('filename');
+
+        var currentFilename = '';
+
+        fileInput.addEventListener('change', async function(e) {
+            var file = e.target.files[0];
+            if (!file) return;
+
+            var formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                var response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                var data = await response.json();
+
+                if (data.success) {
+                    editor.value = data.markdown;
+                    currentFilename = data.filename.replace('.md', '');
+                    filenameSpan.textContent = currentFilename;
+                }
+            } catch (error) {
+                console.error('Upload failed:', error);
+            }
+
+            e.target.value = '';
+        });
+
+        previewBtn.addEventListener('click', async function() {
+            var markdown = editor.value;
+            if (!markdown) return;
+
+            try {
+                var response = await fetch('/api/preview', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ markdown: markdown })
+                });
+                var data = await response.json();
+
+                if (data.success) {
+                    previewContent.innerHTML = data.html;
+                    previewContent.style.display = 'block';
+                    previewPlaceholder.style.display = 'none';
+                } else {
+                    alert('Preview error: ' + data.detail);
+                }
+            } catch (error) {
+                console.error('Preview failed:', error);
+            }
+        });
+
+        convertBtn.addEventListener('click', async function() {
+            var markdown = editor.value;
+            if (!markdown) return;
+
+            convertBtn.disabled = true;
+            convertBtn.textContent = 'Generating...';
+
+            try {
+                var response = await fetch('/api/convert', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        markdown: markdown,
+                        theme: theme.value,
+                        filename: currentFilename || 'document'
+                    })
+                });
+                var data = await response.json();
+
+                if (data.success) {
+                    window.location.href = data.download_url;
+                    loadHistory();
+                } else {
+                    alert('Error: ' + data.detail);
+                }
+            } catch (error) {
+                console.error('Convert failed:', error);
+                alert('Convert failed: ' + error);
+            } finally {
+                convertBtn.disabled = false;
+                convertBtn.textContent = 'Generate PDF';
+            }
+        });
+
+        async function loadHistory() {
+            try {
+                var response = await fetch('/api/history');
+                var data = await response.json();
+
+                if (data.success && data.items.length > 0) {
+                    historyList.innerHTML = data.items.map(function(item) {
+                        return '<a href="/api/download/' + item.file_id + '" class="inline-flex items-center px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs transition">' +
+                            '<span>' + item.original_name + '</span>' +
+                            '<span class="text-gray-400 ml-2">(' + item.remaining_hours + 'h)</span>' +
+                            '</a>';
+                    }).join('');
+                }
+            } catch (error) {
+                console.error('Load history failed:', error);
+            }
+        }
+
+        loadHistory();
+    </script>
+</body>
+</html>

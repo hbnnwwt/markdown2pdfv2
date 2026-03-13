@@ -10,26 +10,62 @@
 - **多主题支持** - 默认、学术论文、技术文档三种主题
 - **PDF 生成** - 使用 WeasyPrint 生成高质量 PDF
 - **历史记录** - 24小时内可重新下载已生成的文件
+- **中文支持** - 自动检测并使用系统中文字体
 
-## 快速开始
+## 安装
 
 ### 1. 安装依赖
 
 ```bash
+# 创建虚拟环境（推荐）
+python -m venv venv
+
+# 激活虚拟环境
+# Windows:
+venv\Scripts\activate
+# Linux/macOS:
+source venv/bin/activate
+
+# 安装 Python 依赖
 pip install -r requirements.txt
 ```
 
-> **注意**: WeasyPrint 需要系统安装 GTK+ 库。Windows 用户请参考 [WeasyPrint 安装指南](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation)。
+### 2. 安装 GTK+（WeasyPrint 依赖）
 
-### 2. 运行服务
+WeasyPrint 需要系统安装 GTK+ 库。
+
+#### Windows
+
+1. 下载 GTK+ 安装包：https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer
+2. 运行安装程序，使用默认选项即可
+3. 重启终端或 IDE 使环境变量生效
+
+#### Linux (Debian/Ubuntu)
 
 ```bash
+sudo apt-get install libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
+```
+
+#### macOS
+
+```bash
+brew install pango gdk-pixbuf libffi
+```
+
+### 3. 验证安装
+
+```bash
+python -c "from weasyprint import HTML; print('WeasyPrint 安装成功')"
+```
+
+## 运行
+
+```bash
+# 激活虚拟环境后
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 3. 访问应用
-
-打开浏览器访问 http://localhost:8000
+访问 http://localhost:8000 即可使用。
 
 ## 主题说明
 
@@ -50,18 +86,42 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 | `/api/download/{file_id}` | GET | 下载 PDF |
 | `/api/history` | GET | 获取历史记录 |
 
+### API 示例
+
+**转换为 PDF：**
+
+```bash
+curl -X POST http://localhost:8000/api/convert \
+  -H "Content-Type: application/json" \
+  -d '{"markdown": "# 标题\n\n内容", "theme": "default", "filename": "document"}'
+```
+
+**响应：**
+
+```json
+{
+  "success": true,
+  "file_id": "abc123",
+  "download_url": "/api/download/abc123",
+  "filename": "document.pdf",
+  "file_size": 7168,
+  "expires_at": "2024-01-02T12:00:00"
+}
+```
+
 ## 目录结构
 
 ```
-markdown2pdf/
+markdown2pdfv2/
 ├── app/
 │   ├── __init__.py
 │   ├── main.py              # FastAPI 入口
+│   ├── deps.py              # 依赖注入
 │   ├── routers/
 │   │   └── api.py           # API 路由
 │   ├── services/
-│   │   ├── converter.py     # 转换服务
-│   │   └── storage.py       # 存储服务
+│   │   ├── converter.py     # Markdown 转 PDF 服务
+│   │   └── storage.py       # 文件存储服务
 │   ├── templates/
 │   │   └── index.html       # 主页面模板
 │   └── static/
@@ -74,5 +134,9 @@ markdown2pdf/
 
 ## 技术栈
 
-- **后端**: FastAPI + WeasyPrint + Markdown-it-py
+- **后端**: FastAPI + WeasyPrint + markdown-it-py
 - **前端**: TailwindCSS + CodeMirror + Alpine.js
+
+## 许可证
+
+MIT License

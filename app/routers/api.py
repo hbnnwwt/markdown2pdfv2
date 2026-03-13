@@ -89,6 +89,37 @@ async def convert(request: ConvertRequest):
         return {"success": False, "detail": str(e)}
 
 
+@router.post("/api/convert-word")
+async def convert_word(request: ConvertRequest):
+    """Convert markdown to Word document."""
+    try:
+        word_bytes = converter.to_word(
+            markdown_text=request.markdown,
+            title=request.filename or "Document",
+        )
+
+        filename = request.filename or "document.docx"
+        if not filename.endswith(".docx"):
+            filename += ".docx"
+
+        record = get_storage().save(
+            content=word_bytes,
+            original_name=filename,
+            theme=request.theme,
+        )
+
+        return {
+            "success": True,
+            "file_id": record.file_id,
+            "download_url": f"/api/download/{record.file_id}",
+            "filename": record.original_name,
+            "file_size": record.file_size,
+            "expires_at": record.expires_at.isoformat(),
+        }
+    except Exception as e:
+        return {"success": False, "detail": str(e)}
+
+
 @router.post("/api/upload")
 async def upload(file: UploadFile = File(...)):
     """Upload markdown file and return its content."""

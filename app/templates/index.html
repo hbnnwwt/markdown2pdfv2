@@ -71,6 +71,10 @@
                     Generate PDF
                 </button>
 
+                <button id="wordBtn" class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded text-sm transition">
+                    Export Word
+                </button>
+
                 <span id="filename" class="text-sm text-gray-400 ml-2"></span>
             </div>
         </div>
@@ -143,6 +147,7 @@ function hello() {
         var fileInput = document.getElementById('fileInput');
         var previewBtn = document.getElementById('previewBtn');
         var convertBtn = document.getElementById('convertBtn');
+        var wordBtn = document.getElementById('wordBtn');
         var previewContent = document.getElementById('previewContent');
         var previewPlaceholder = document.getElementById('previewPlaceholder');
         var historyList = document.getElementById('historyList');
@@ -231,6 +236,40 @@ function hello() {
             } finally {
                 convertBtn.disabled = false;
                 convertBtn.textContent = 'Generate PDF';
+            }
+        });
+
+        wordBtn.addEventListener('click', async function() {
+            var markdown = editor.value;
+            if (!markdown) return;
+
+            wordBtn.disabled = true;
+            wordBtn.textContent = 'Exporting...';
+
+            try {
+                var response = await fetch('/api/convert-word', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        markdown: markdown,
+                        theme: theme.value,
+                        filename: currentFilename || 'document'
+                    })
+                });
+                var data = await response.json();
+
+                if (data.success) {
+                    window.location.href = data.download_url;
+                    loadHistory();
+                } else {
+                    alert('Error: ' + data.detail);
+                }
+            } catch (error) {
+                console.error('Export Word failed:', error);
+                alert('Export Word failed: ' + error);
+            } finally {
+                wordBtn.disabled = false;
+                wordBtn.textContent = 'Export Word';
             }
         });
 
